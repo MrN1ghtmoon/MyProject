@@ -4,12 +4,11 @@ namespace MyProject
 {
 	void Game::initVariables() //Обращение к функции
 	{
-		m_window = nullptr;// nullptr - значение памяти которое нигде не используется.
+		m_window = nullptr;//Отдельный тип данных, с которым комплилятор не может спутать(указатель на нулевое значение)
 
 		//Логика игры.
 		m_endGame = false;
 		m_points = 0;
-		m_health = 20;
 		m_figureSpawnTimerMax = 20;
 		m_figureSpawnTimer = m_figureSpawnTimerMax;
 		m_maxfigures = 5;
@@ -21,7 +20,7 @@ namespace MyProject
 		m_videoMode.height = 600;//высота(y)
 		m_videoMode.width = 800;//ширина(x)
 		m_window = new sf::RenderWindow(m_videoMode, "My Project"); // Создаём графическое окно
-	}
+	}//указатель на переменую, которая создает окно для двумерного пространства.
 
 	// Конструктор / деструктор
 	Game::Game()
@@ -30,16 +29,12 @@ namespace MyProject
 		initWindow();
 	}
 
-	Game::~Game()
-	{
-		delete m_window;// Удалить окно при завершении
-	}
-	const bool Game::running()
+	const bool Game::running() // Чтобы не изменялось значение пишем - const
 	{
 		return m_window->isOpen();
 	}
 
-	const bool Game::getEndGame()
+	const bool Game::getEndGame()// Чтобы не изменялось значение пишем - const
 	{
 		return m_endGame;
 	}
@@ -56,10 +51,9 @@ namespace MyProject
 		*/
 
 		m_figure.setPosition(
-			float(rand() % int(m_window->getSize().x - m_figure.getRadius())),0); // Рандомизирует позицию фигур по Х
+			float(rand() % int(m_window->getSize().x - m_figure.getRadius())), 0); // Рандомизирует позицию фигур по Х
 		// Рандомизировать тип фигур
 		int type = rand() % 5;
-
 		switch (type)
 		{
 		case 0:
@@ -83,7 +77,7 @@ namespace MyProject
 			m_figure.setFillColor(sf::Color::Color(0, 128, 128));
 			break;
 		}
-		//Создать фигуры
+		//Добавляешь в конец массива фигуру
 		m_figures.push_back(m_figure);
 	}
 
@@ -104,15 +98,15 @@ namespace MyProject
 			}
 		}
 	}
-	void Game::updateMousePositions()
+	void Game::updateMousePositions()// Позиция мыши.
 	{
 		/*
 			Обновляет положения мыши:
-			- Положение мыши относительно окна (Vector2i)
+			- Положение мыши относительно окна
 		*/
 
-		m_mousePosWindow = sf::Mouse::getPosition(*m_window);//забираем коорд курсора
-		m_mousePosView = m_window->mapPixelToCoords(m_mousePosWindow);//переводим их в игровые
+		m_mousePosWindow = sf::Mouse::getPosition(*m_window);//нахоим коорд курсора
+		m_mousePosView = m_window->mapPixelToCoords(m_mousePosWindow);//переводим пикселей в координаты
 	}
 	void Game::updateFigures()
 	{
@@ -127,7 +121,7 @@ namespace MyProject
 		//Обновление таймера для появления фигуры
 		if (m_figures.size() < m_maxfigures) //size - найти длину массива класса вектор
 		{
-			if (m_figureSpawnTimer >= m_figureSpawnTimerMax)
+			if (m_figureSpawnTimer == m_figureSpawnTimerMax)
 			{
 				//Появление фигуры и сбрасывание таймера
 				spawnFigure();
@@ -146,22 +140,20 @@ namespace MyProject
 
 			if (m_figures[i].getPosition().y > m_window->getSize().y)
 			{
-				m_figures.erase(m_figures.begin() + i); //Стереть элемент массива(фигуру)
-				m_health -= 1;
-				std::cout << "\t\tHealth: " << m_health << "\n";
+				m_figures.erase(m_figures.begin() + i); //Стереть элемент массива(фигуру) begin - возвращает указатель на начало массива
 			}
 		}
 
-		//Проверка нажатия на фигуру левой кнопкой мыши.
+		//Проверка нажатия на левую кнопки мыши.
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
 			if (m_mouseHeld == false)
 			{
 				m_mouseHeld = true;
 				bool deleted = false;
-				for (size_t i = 0; i < m_figures.size() && deleted == false; i++)
+				for (int i = 0; i < m_figures.size() && deleted == false; i++)
 				{
-					if (m_figures[i].getGlobalBounds().contains(m_mousePosView))
+					if (m_figures[i].getGlobalBounds().contains(m_mousePosView)) //Границы к круга, если точка находится в координатах границы круга,то.
 					{
 						//Очки за фигуру
 						if (m_figures[i].getFillColor() == sf::Color::Color(75, 0, 130))
@@ -194,28 +186,28 @@ namespace MyProject
 	{
 		pollEvents();
 
-		if (m_endGame == false)
+		if (m_endGame == false)// Если игра не закончена.
 		{
-			updateMousePositions();
-			updateFigures();
+			updateMousePositions(); // Обновляем позицию мышки
+			updateFigures(); // Обновляем фигуры
 		}
 
 		//Условие окончания игры
-		if (m_health <= 0)
+		if (m_points > 100)
 			m_endGame = true;
 	}
 
-	void Game::renderFigures(sf::RenderTarget& target)
+	void Game::renderFigures(sf::RenderTarget& target)//
 	{
 		//Визуализация всех фигур
-		for (auto& e : m_figures)
+		for (auto& e : m_figures)//& используем чтобы поменять значение напрямую,  а не делать копию.
 		{
-			target.draw(e);
+			target.draw(e);//Рисует фигуры
 		}
 	}
 	void Game::render()
 	{
-		m_window->clear(sf::Color::Color(255, 182, 193)); // Обновление одним цветом
+		m_window->clear(sf::Color::Color(255, 182, 193)); // Очищает экран цветом(каждый фрейм)
 
 		//Рисуем игровые объекты
 		renderFigures(*m_window);

@@ -77,7 +77,7 @@ namespace MyProject
 			m_figure.setFillColor(sf::Color::Color(0, 128, 128));
 			break;
 		}
-		//Добавляешь в конец массива фигуру
+		//Добать элемент(фигуру) в конец массива
 		m_figures.push_back(m_figure);
 	}
 
@@ -153,7 +153,7 @@ namespace MyProject
 				bool deleted = false;
 				for (int i = 0; i < m_figures.size() && deleted == false; i++)
 				{
-					if (m_figures[i].getGlobalBounds().contains(m_mousePosView)) //Границы к круга, если точка находится в координатах границы круга,то.
+					if (m_figures[i].getGlobalBounds().contains(m_mousePosView)) //Границы к круга, если точка находится в координатах границы круга,то выполняются условия ниже.
 					{
 						//Очки за фигуру
 						if (m_figures[i].getFillColor() == sf::Color::Color(75, 0, 130))
@@ -171,7 +171,7 @@ namespace MyProject
 
 						//Удалять фигуры при нажатии
 						deleted = true;
-						m_figures.erase(m_figures.begin() + i);//begin - возвращает указатель на начало массива
+						m_figures.erase(m_figures.begin() + i);//begin дал доступ нашему итератору к самому первому элементу вектора
 					}
 				}
 			}
@@ -200,7 +200,8 @@ namespace MyProject
 	void Game::renderFigures(sf::RenderTarget& target)//
 	{
 		//Визуализация всех фигур
-		for (auto& e : m_figures)//& используем чтобы поменять значение напрямую,  а не делать копию.
+		for (auto e : m_figures)//auto помогает компилятору на этапе компиляции определить тип переменной на основе типа инициализируемого выражения.
+			//Перебор по значениям
 		{
 			target.draw(e);//Рисует фигуры
 		}

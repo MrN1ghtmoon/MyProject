@@ -93,7 +93,7 @@ namespace MyProject
 				break;
 			case sf::Event::KeyPressed://нажатие клавиши
 				if (m_event.key.code == sf::Keyboard::Escape) // Код Кнопки ESC	
-					m_window->close();// закрыть
+					m_window->close();// закрыть (C помощью стрелки осуществляется доступ к методу close)
 				break;
 			}
 		}
